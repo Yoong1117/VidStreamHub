@@ -1,0 +1,18 @@
+#rememberMe{
+    position: relative;
+    top: 3px;
+}
+
+.custom-bg{
+    background-color: rgb(0, 0, 0);
+}
+
+.btns{
+    position: relative;
+    top: 10px;
+}
+
+.register{
+    position: relative;
+    top: 20px;
+}

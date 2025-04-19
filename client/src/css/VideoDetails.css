@@ -1,0 +1,22 @@
+.video-description {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.video-description a {
+  text-decoration: none; /* Removes underline */
+  color: #007bff; /* Optional: Adjust link color */
+}
+  
+.video-description a:hover {
+  text-decoration: underline; /* Optional: Underline on hover */
+}
+
+.custom-dropdown-width {
+  min-width: 80px; 
+  width: 80px;    
+}
+
+  

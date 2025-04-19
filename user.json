@@ -1,0 +1,27 @@
+[
+    {
+      "username": "Minecraft",
+      "email": "minecraft@gmail.com",
+      "password": "minecraft123",
+      "profilePic": "https://res.cloudinary.com/dzrl3jo6x/image/upload/profile_dxzkob"
+    },
+    {
+      "username": "Lady Gaga",
+      "email": "ladygaga@gmail.com",
+      "password": "ladygaga123",
+      "profilePic": "https://res.cloudinary.com/dzrl3jo6x/image/upload/profile_dxzkob"
+    },
+    {
+      "username": "The Star",
+      "email": "thestar@gmail.com",
+      "password": "thestar123",
+      "profilePic": "https://res.cloudinary.com/dzrl3jo6x/image/upload/profile_dxzkob"
+    },
+    {
+      "username": "JY Lee",
+      "email": "jiangyoong1117@gmail.com",
+      "password": "1234567890",
+      "profilePic": "https://res.cloudinary.com/dzrl3jo6x/image/upload/profile_dxzkob"
+    }
+  ]
+  
