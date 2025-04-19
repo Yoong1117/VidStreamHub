@@ -44,6 +44,7 @@ export default function VideoGrid({
   const [usernames, setUsernames] = useState<{ [userId: string]: string }>({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
+  const url = "https://vidstreamhub-backend.onrender.com";
 
   useEffect(() => {
     const uniqueUserIds = [...new Set(videos.map((v) => v.user))];
@@ -51,7 +52,7 @@ export default function VideoGrid({
     // 1. Always fetch uploader info
     Promise.all(
       uniqueUserIds.map((userId) =>
-        fetch(`http://localhost:3001/api/user/profile/${userId}`)
+        fetch(`${url}/api/user/profile/${userId}`)
           .then((res) => res.json())
           .then((data) => ({
             userId,
@@ -85,7 +86,7 @@ export default function VideoGrid({
 
     if (token && sessionUsername) {
       setIsLoggedIn(true);
-      fetch(`http://localhost:3001/api/user/getIdByUsername/${sessionUsername}`)
+      fetch(`${url}/api/user/getIdByUsername/${sessionUsername}`)
         .then((res) => res.json())
         .then((data) => {
           setLoggedInUserId(data.userId);
@@ -107,7 +108,7 @@ export default function VideoGrid({
 
     try {
       const response = await fetch(
-        `http://localhost:3001/api/video/${videoId}`,
+        `${url}/api/video/${videoId}`,
         {
           method: "DELETE",
         }
@@ -136,7 +137,7 @@ export default function VideoGrid({
     const token = sessionStorage.getItem("token");
     if (token) {
       try {
-        await fetch("http://localhost:3001/api/history/update", {
+        await fetch(`${url}/api/history/update`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
