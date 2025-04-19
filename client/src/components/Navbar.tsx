@@ -42,7 +42,7 @@ export default function UserNavbar() {
     setToken(storedToken);
 
     if (storedUsername) {
-      fetch(`http://localhost:3001/api/user/profile/username/${storedUsername}`)
+      fetch(`https://vidstreamhub-backend.onrender.com/api/user/profile/username/${storedUsername}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.profilePic) {
