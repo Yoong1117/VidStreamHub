@@ -19,13 +19,10 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect(process.env.MONGODB_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log("✅ Connected to MongoDB Atlas"))
-.catch((err) => {
-  console.error("❌ MongoDB connection error:", err.message);
+mongoose.connect(process.env.MONGODB_URL).then(() => {
+  console.log("Connected to MongoDB Atlas");
+}).catch((err) => {
+  console.error("MongoDB connection error:", err);
 });
 
 const cloudinary = require("cloudinary").v2;
@@ -827,5 +824,5 @@ app.get(`${follower}/:targetUserId/isFollowing/:currentUserId`, async (req, res)
 
 // Start Server
 app.listen(process.env.PORT || 3001, () => {
-  console.log("Server is running on port 3001");
+  console.log("Server is running");
 });
