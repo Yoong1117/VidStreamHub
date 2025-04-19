@@ -172,10 +172,13 @@ export default function VideoDetails() {
     if (!editingCommentId || editedCommentText.trim() === "") return;
 
     try {
-      await axios.put(`${API_URL}/comment/${editingCommentId}/edit-comment`, {
-        text: editedCommentText,
-        username,
-      });
+      await axios.put(
+        `${API_URL}/api/comment/${editingCommentId}/edit-comment`,
+        {
+          text: editedCommentText,
+          username,
+        }
+      );
 
       // Replace the updated comment in state
       setComments((prev) =>
@@ -195,7 +198,7 @@ export default function VideoDetails() {
     if (!username) return;
 
     try {
-      await axios.delete(`${API_URL}/comment/${commentId}/delete-comment`, {
+      await axios.delete(`${API_URL}/api/comment/${commentId}/delete-comment`, {
         params: { username },
       });
       setComments((prev) => prev.filter((c) => c._id !== commentId));
