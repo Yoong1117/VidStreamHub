@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import "../css/VideoDetails.css";
 import axios from "axios";
+import { API_URL } from "../config";
 
 export default function VideoDetails() {
   const { id } = useParams();
@@ -32,32 +33,28 @@ export default function VideoDetails() {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      axios
-        .post(`http://localhost:3001/api/video/${id}/view`)
-        .catch((error) => {
-          console.error("Error incrementing view count:", error);
-        });
+      axios.post(`${API_URL}/api/video/${id}/view`).catch((error) => {
+        console.error("Error incrementing view count:", error);
+      });
     }, 30000); // 30 seconds delay to increase view
 
     const fetchVideoData = async () => {
       if (!id) return;
 
       try {
-        const videoRes = await axios.get(
-          `http://localhost:3001/api/video/${id}/details`
-        );
+        const videoRes = await axios.get(`${API_URL}/api/video/${id}/details`);
         const videoData = videoRes.data;
         setVideo(videoData);
 
         // Fetch uploader info
         const userRes = await axios.get(
-          `http://localhost:3001/api/user/profile/${videoData.user}`
+          `${API_URL}/api/user/profile/${videoData.user}`
         );
         setUploader(userRes.data);
 
         // Fetch likes/dislikes
         const likeRes = await axios.get(
-          `http://localhost:3001/api/video/${id}/like-dislike-count`
+          `${API_URL}/api/video/${id}/like-dislike-count`
         );
         const likes = likeRes.data.likes;
         const dislikes = likeRes.data.dislikes;
@@ -66,7 +63,7 @@ export default function VideoDetails() {
 
         if (username) {
           const statusRes = await axios.get(
-            `http://localhost:3001/api/video/${id}/like-status`,
+            `${API_URL}/api/video/${id}/like-status`,
             { params: { username } }
           );
           setHasLiked(statusRes.data.liked);
@@ -75,7 +72,7 @@ export default function VideoDetails() {
 
         // Fetch comments
         const commentRes = await axios.get(
-          `http://localhost:3001/api/comment/${id}/get-comment`
+          `${API_URL}/api/comment/${id}/get-comment`
         );
         setComments(commentRes.data.comments);
 
@@ -84,7 +81,7 @@ export default function VideoDetails() {
           const userId = comment.user._id;
           if (!profilePics[userId]) {
             const picRes = await axios.get(
-              `http://localhost:3001/api/user/profile/${userId}`
+              `${API_URL}/api/user/profile/${userId}`
             );
 
             setProfilePics((prev) => ({
@@ -106,10 +103,9 @@ export default function VideoDetails() {
   const handleLike = async () => {
     if (!username) return alert("You need to be logged in to like videos.");
     try {
-      const res = await axios.post(
-        `http://localhost:3001/api/video/${id}/like`,
-        { username }
-      );
+      const res = await axios.post(`${API_URL}/api/video/${id}/like`, {
+        username,
+      });
       setLikeCount(res.data.likes);
       setDislikeCount(res.data.dislikes);
       setHasLiked(true);
@@ -122,10 +118,9 @@ export default function VideoDetails() {
   const handleDislike = async () => {
     if (!username) return alert("You need to be logged in to dislike videos.");
     try {
-      const res = await axios.post(
-        `http://localhost:3001/api/video/${id}/dislike`,
-        { username }
-      );
+      const res = await axios.post(`${API_URL}/api/video/${id}/dislike`, {
+        username,
+      });
       setLikeCount(res.data.likes);
       setDislikeCount(res.data.dislikes);
       setHasLiked(false);
@@ -141,10 +136,10 @@ export default function VideoDetails() {
 
     try {
       // Post comment and wait for full user-resolved comment from backend
-      const res = await axios.post(
-        `http://localhost:3001/api/comment/${id}/add-comment`,
-        { username, text: commentText }
-      );
+      const res = await axios.post(`${API_URL}/api/comment/${id}/add-comment`, {
+        username,
+        text: commentText,
+      });
 
       const newComments = res.data.comments;
       setComments(newComments);
@@ -156,9 +151,7 @@ export default function VideoDetails() {
 
       // Only fetch profile pic if not already available
       if (!profilePics[userId]) {
-        const picRes = await axios.get(
-          `http://localhost:3001/api/user/profile/${userId}`
-        );
+        const picRes = await axios.get(`${API_URL}/api/user/profile/${userId}`);
 
         setProfilePics((prev) => ({
           ...prev,
@@ -179,13 +172,10 @@ export default function VideoDetails() {
     if (!editingCommentId || editedCommentText.trim() === "") return;
 
     try {
-      await axios.put(
-        `http://localhost:3001/api/comment/${editingCommentId}/edit-comment`,
-        {
-          text: editedCommentText,
-          username,
-        }
-      );
+      await axios.put(`${API_URL}/comment/${editingCommentId}/edit-comment`, {
+        text: editedCommentText,
+        username,
+      });
 
       // Replace the updated comment in state
       setComments((prev) =>
@@ -205,12 +195,9 @@ export default function VideoDetails() {
     if (!username) return;
 
     try {
-      await axios.delete(
-        `http://localhost:3001/api/comment/${commentId}/delete-comment`,
-        {
-          params: { username },
-        }
-      );
+      await axios.delete(`${API_URL}/comment/${commentId}/delete-comment`, {
+        params: { username },
+      });
       setComments((prev) => prev.filter((c) => c._id !== commentId));
     } catch (error) {
       console.error("Error deleting comment:", error);

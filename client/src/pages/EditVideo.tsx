@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 import axios from "axios";
 
 const EditVideo = () => {
@@ -17,9 +18,7 @@ const EditVideo = () => {
   useEffect(() => {
     const fetchVideo = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3001/api/video/${id}/details`
-        );
+        const response = await axios.get(`${API_URL}/api/video/${id}/details`);
         const videoData = response.data;
 
         setVideo(videoData);
@@ -62,20 +61,17 @@ const EditVideo = () => {
         formData.append("oldThumbnailUrl", video.thumbnailUrl || "");
 
         const uploadResponse = await axios.post(
-          "http://localhost:3001/api/video/upload-thumbnail",
+          `${API_URL}/api/video/upload-thumbnail`,
           formData
         );
 
         thumbnailUrl = uploadResponse.data.thumbnailUrl; // Get the new thumbnail URL
       }
 
-      await axios.put(
-        `http://localhost:3001/api/video/update-thumbnail/${id}`,
-        {
-          ...updatedVideo,
-          thumbnailUrl,
-        }
-      );
+      await axios.put(`${API_URL}/api/video/update-thumbnail/${id}`, {
+        ...updatedVideo,
+        thumbnailUrl,
+      });
       alert("Video details updated successfully!");
       navigate(`/myvideos`);
     } catch (error) {

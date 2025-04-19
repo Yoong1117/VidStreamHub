@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import bgVid from "../assets/VS.mp4";
 import "../css/SignUp.css";
 import axios from "axios";
+import { API_URL } from "../config";
 
 export default function SignUp() {
   const [username, setUsername] = useState<string>("");
@@ -13,7 +14,7 @@ export default function SignUp() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     axios
-      .post("http://localhost:3001/api/user/register", {
+      .post(`${API_URL}/api/user/register`, {
         username,
         email,
         password,

@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import "../css/UploadPage.css";
+import { API_URL } from "../config";
 
 export default function UploadPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -116,7 +117,7 @@ export default function UploadPage() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/api/video/upload-video",
+        `${API_URL}/api/video/upload-video`,
         formData,
         {
           headers: {

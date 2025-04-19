@@ -2,6 +2,7 @@ import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import bgVid from "../assets/VS.mp4";
+import { API_URL } from "../config";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -13,13 +14,10 @@ export default function SignIn() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:3001/api/user/login",
-        {
-          email,
-          password,
-        }
-      );
+      const response = await axios.post(`${API_URL}/api/user/login`, {
+        email,
+        password,
+      });
 
       sessionStorage.setItem("token", response.data.token); // Store token
       sessionStorage.setItem("username", response.data.username); // Store username

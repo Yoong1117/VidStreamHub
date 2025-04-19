@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import VideoGrid from "../components/VideoGrid";
+import { API_URL } from "../config";
 
 export default function ProfilePage() {
   const { username: paramUsername } = useParams<{ username: string }>();
@@ -23,7 +24,7 @@ export default function ProfilePage() {
       if (!sessionUsername) return;
       try {
         const res = await axios.get(
-          `http://localhost:3001/api/user/getIdByUsername/${sessionUsername}`
+          `${API_URL}/api/user/getIdByUsername/${sessionUsername}`
         );
         setLoggedInUserId(res.data.userId);
       } catch (err) {
@@ -41,26 +42,24 @@ export default function ProfilePage() {
         if (!targetUsername) return;
 
         const res = await axios.get(
-          `http://localhost:3001/api/user/getIdByUsername/${targetUsername}`
+          `${API_URL}/api/user/getIdByUsername/${targetUsername}`
         );
         const id = res.data.userId;
         setUserId(id);
 
-        const profileRes = await axios.get(
-          `http://localhost:3001/api/user/profile/${id}`
-        );
+        const profileRes = await axios.get(`${API_URL}/api/user/profile/${id}`);
         setProfilePic(profileRes.data.profilePic);
         setUsername(profileRes.data.username);
 
         const followerRes = await axios.get(
-          `http://localhost:3001/api/follower/${id}/count`
+          `${API_URL}/api/follower/${id}/count`
         );
         setFollowerCount(followerRes.data.count);
 
         // Check if logged in user follows the target user
         if (loggedInUserId && loggedInUserId !== id) {
           const isFollowRes = await axios.get(
-            `http://localhost:3001/api/follower/${id}/isFollowing/${loggedInUserId}`
+            `${API_URL}/api/follower/${id}/isFollowing/${loggedInUserId}`
           );
           setIsFollowing(isFollowRes.data.isFollowing);
         }
@@ -76,7 +75,7 @@ export default function ProfilePage() {
     if (!userId) return;
 
     axios
-      .get(`http://localhost:3001/api/video/user/${userId}`)
+      .get(`${API_URL}/api/video/user/${userId}`)
       .then((res) => setVideos(res.data))
       .catch((err) => {
         console.error("Failed to fetch videos:", err);
@@ -88,16 +87,13 @@ export default function ProfilePage() {
 
     try {
       if (isFollowing) {
-        await axios.delete(
-          `http://localhost:3001/api/follower/delete/${userId}`,
-          {
-            data: { followerId: loggedInUserId },
-          }
-        );
+        await axios.delete(`${API_URL}/api/follower/delete/${userId}`, {
+          data: { followerId: loggedInUserId },
+        });
         setIsFollowing(false);
         setFollowerCount((prev) => prev - 1);
       } else {
-        await axios.post(`http://localhost:3001/api/follower/add/${userId}`, {
+        await axios.post(`${API_URL}/api/follower/add/${userId}`, {
           followerId: loggedInUserId,
         });
         setIsFollowing(true);

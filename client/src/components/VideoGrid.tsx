@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import "../css/VideoGrid.css";
 import clip_2 from "../assets/clip_2.png";
 import empty from "../assets/empty.png";
+import { API_URL } from "../config";
 
 interface Video {
   _id: string;
@@ -44,7 +45,6 @@ export default function VideoGrid({
   const [usernames, setUsernames] = useState<{ [userId: string]: string }>({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loggedInUserId, setLoggedInUserId] = useState<string | null>(null);
-  const url = "https://vidstreamhub-backend.onrender.com";
 
   useEffect(() => {
     const uniqueUserIds = [...new Set(videos.map((v) => v.user))];
@@ -52,7 +52,7 @@ export default function VideoGrid({
     // 1. Always fetch uploader info
     Promise.all(
       uniqueUserIds.map((userId) =>
-        fetch(`${url}/api/user/profile/${userId}`)
+        fetch(`${API_URL}/api/user/profile/${userId}`)
           .then((res) => res.json())
           .then((data) => ({
             userId,
@@ -86,7 +86,7 @@ export default function VideoGrid({
 
     if (token && sessionUsername) {
       setIsLoggedIn(true);
-      fetch(`${url}/api/user/getIdByUsername/${sessionUsername}`)
+      fetch(`${API_URL}/api/user/getIdByUsername/${sessionUsername}`)
         .then((res) => res.json())
         .then((data) => {
           setLoggedInUserId(data.userId);
@@ -107,12 +107,9 @@ export default function VideoGrid({
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(
-        `${url}/api/video/${videoId}`,
-        {
-          method: "DELETE",
-        }
-      );
+      const response = await fetch(`${API_URL}/api/video/${videoId}`, {
+        method: "DELETE",
+      });
 
       if (!response.ok) {
         const error = await response.json();
@@ -137,7 +134,7 @@ export default function VideoGrid({
     const token = sessionStorage.getItem("token");
     if (token) {
       try {
-        await fetch(`${url}/api/history/update`, {
+        await fetch(`${API_URL}/api/history/update`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

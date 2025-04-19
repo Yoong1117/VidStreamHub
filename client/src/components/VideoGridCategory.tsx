@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import empty from "../assets/empty.png";
+import { API_URL } from "../config";
 import "../css/category.css";
 
 interface Video {
@@ -33,7 +34,7 @@ export default function VideoGridCategory({
     if (!category) return;
 
     axios
-      .get(`http://localhost:3001/api/video/category/${category}`)
+      .get(`${API_URL}/api/video/category/${category}`)
       .then((res) => {
         setVideos(res.data);
 
@@ -45,7 +46,7 @@ export default function VideoGridCategory({
         Promise.all(
           uniqueUserIds.map((userId) =>
             axios
-              .get(`http://localhost:3001/api/user/profile/${userId}`)
+              .get(`${API_URL}/api/user/profile/${userId}`)
               .then((res) => ({
                 userId,
                 profilePic: res.data.profilePic,

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { API_URL } from "../config";
 
 export default function ProfilePage() {
   const [image, setImage] = useState<File | null>(null); // To store the selected image
@@ -55,7 +56,7 @@ export default function ProfilePage() {
       // Update profile picture if a new image is selected
       if (image) {
         const response = await axios.put(
-          "http://localhost:3001/api/user/profile-pic",
+          `${API_URL}/api/user/profile-pic`,
           formData,
           {
             headers: {
@@ -77,7 +78,7 @@ export default function ProfilePage() {
       // Update username only if it's different from the current one
       if (username && username !== storedUsername) {
         const response = await axios.put(
-          "http://localhost:3001/api/user/username", // API endpoint to update username
+          `${API_URL}/api/user/username`, // API endpoint to update username
           { username },
           {
             headers: {

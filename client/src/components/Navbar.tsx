@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { API_URL } from "../config";
 
 // Bootstrap CSS and JS
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -42,7 +43,7 @@ export default function UserNavbar() {
     setToken(storedToken);
 
     if (storedUsername) {
-      fetch(`https://vidstreamhub-backend.onrender.com/api/user/profile/username/${storedUsername}`)
+      fetch(`${API_URL}/api/user/profile/username/${storedUsername}`)
         .then((res) => res.json())
         .then((data) => {
           if (data.profilePic) {
