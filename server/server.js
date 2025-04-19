@@ -12,13 +12,18 @@ const CommentModel = require("./models/Comment");
 const HistoryModel = require("./models/History");
 const FollowerModel = require("./models/Follower");
 
-const SECRET_KEY = "a1f6b3c9e2d8f4a7b5c3d2e8f1a6b7c9e2d8f4a7b5c3d2e8f1a6b7c9e2d8f4a7";
+require('dotenv').config();
+const SECRET_KEY = process.env.JWT_SECRET;
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect("mongodb://localhost:27017/VS");
+mongoose.connect(process.env.MONGODB_URI).then(() => {
+  console.log("Connected to MongoDB Atlas");
+}).catch((err) => {
+  console.error("MongoDB connection error:", err);
+});
 
 const cloudinary = require("cloudinary").v2;
 
