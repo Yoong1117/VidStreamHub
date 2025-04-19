@@ -18,7 +18,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect("mongodb://localhost:27017/VS");
+mongoose.connect("https://vidstreamhub-backend.onrender.com/");
 
 const cloudinary = require("cloudinary").v2;
 
