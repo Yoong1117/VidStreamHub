@@ -267,8 +267,8 @@ export default function VideoDetails() {
                     style={{ objectFit: "cover" }}
                   />
                   <Link
-                    to={`/profile/${uploader.username}`}
-                    className="text-decoration-none fw-semibold"
+                    to={`/profilepage/${uploader.username}`}
+                    style={{ textDecoration: "none", color: "inherit" }}
                   >
                     {uploader.username}
                   </Link>
