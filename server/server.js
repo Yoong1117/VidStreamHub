@@ -518,6 +518,108 @@ app.post(`${video}/:id/dislike`, async (req, res) => {
   }
 });
 
+// Delete Video
+app.delete(`${video}/:id/delete-video`, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the video in MongoDB
+    const video = await VideoModel.findById(id);
+    if (!video) {
+      return res.status(404).json({ message: "Video not found" });
+    }
+
+    // Extract Cloudinary URLs
+    const videoPublicId = video.videoUrl.split("/").pop().split(".")[0]; // Extract public ID from URL
+    const thumbnailPublicId = video.thumbnailUrl
+      ? video.thumbnailUrl.split("/").pop().split(".")[0]
+      : null;
+
+    // Delete video from Cloudinary
+    await cloudinary.uploader.destroy(videoPublicId, { resource_type: "video" });
+
+    // Delete thumbnail from Cloudinary (if exists)
+    if (thumbnailPublicId) {
+      await cloudinary.uploader.destroy(thumbnailPublicId);
+    }
+
+    // Remove related videos, comments, likes/dislikes from MongoDB
+    await VideoModel.findByIdAndDelete(id);
+    await CommentModel.findByIdAndDelete(id);
+    await LikeModel.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Video deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete video", error });
+  }
+});
+
+// Upload thumbnail to Cloudinary
+app.post(`${video}/upload-thumbnail`, upload_pic, async (req, res) => {
+  const { file } = req;
+  const oldThumbnailUrl = req.body.oldThumbnailUrl;
+
+  if (!file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  try {
+    // Optional: Delete old thumbnail from Cloudinary
+    if (oldThumbnailUrl) {
+      const publicId = extractPublicIdFromUrl(oldThumbnailUrl);
+      if (publicId) {
+        await cloudinary.uploader.destroy(publicId);
+      }
+    }
+
+    // Upload new thumbnail
+    cloudinary.uploader.upload_stream(
+      { resource_type: "image", public_id: `video_thumbnails/${req.userId}_${Date.now()}` },
+      async (error, result) => {
+        if (error) {
+          return res.status(500).json({ message: "Error uploading image to Cloudinary", error });
+        }
+        res.status(200).json({ thumbnailUrl: result.secure_url });
+      }
+    ).end(file.buffer);
+  } catch (error) {
+    res.status(500).json({ message: "Server error during thumbnail upload", error });
+  }
+});
+
+// Update video datails (including thumbnail URL)
+app.put(`${video}/update-thumbnail/:id`, async (req, res) => {
+  const { id } = req.params;
+  const { title, privacy, category, description, thumbnailUrl } = req.body;
+
+  try {
+    const updatedVideo = await VideoModel.findByIdAndUpdate(
+      id,
+      { title, privacy, category, description, thumbnailUrl },
+      { new: true }
+    );
+    res.status(200).json(updatedVideo);
+  } catch (error) {
+    res.status(500).json({ message: "Error updating video", error });
+  }
+});
+
+// Fetch videos based on category
+app.get(`${video}/category/:type`, async (req, res) => {
+  const { type } = req.params;
+  try {
+    const videos = await VideoModel.aggregate([
+      { $match: { category: `${type}` } },
+      { $addFields: { randomSort: { $rand: {} } } },
+      { $sort: { randomSort: 1 } },
+    ]);
+
+    res.json(videos);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch gaming videos" });
+  }
+});
+
 // Get all comments for a video
 app.get(`${comment}/:videoId/get-comment`, async (req, res) => {
   const { videoId } = req.params;
@@ -617,106 +719,6 @@ app.put(`${comment}/:commentId/edit-comment`, async (req, res) => {
   } catch (err) {
     console.error("Error editing comment:", err);
     res.status(500).json({ error: "Server error" });
-  }
-});
-
-// Delete Video
-app.delete(`${video}/:id`, async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    // Find the video in MongoDB
-    const video = await VideoModel.findById(id);
-    if (!video) {
-      return res.status(404).json({ message: "Video not found" });
-    }
-
-    // Extract Cloudinary URLs
-    const videoPublicId = video.videoUrl.split("/").pop().split(".")[0]; // Extract public ID from URL
-    const thumbnailPublicId = video.thumbnailUrl
-      ? video.thumbnailUrl.split("/").pop().split(".")[0]
-      : null;
-
-    // Delete video from Cloudinary
-    await cloudinary.uploader.destroy(videoPublicId, { resource_type: "video" });
-
-    // Delete thumbnail from Cloudinary (if exists)
-    if (thumbnailPublicId) {
-      await cloudinary.uploader.destroy(thumbnailPublicId);
-    }
-
-    // Remove from MongoDB
-    await VideoModel.findByIdAndDelete(id);
-
-    res.status(200).json({ message: "Video deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to delete video", error });
-  }
-});
-
-// Upload thumbnail to Cloudinary
-app.post(`${video}/upload-thumbnail`, upload_pic, async (req, res) => {
-  const { file } = req;
-  const oldThumbnailUrl = req.body.oldThumbnailUrl;
-
-  if (!file) {
-    return res.status(400).json({ message: "No file uploaded" });
-  }
-
-  try {
-    // Optional: Delete old thumbnail from Cloudinary
-    if (oldThumbnailUrl) {
-      const publicId = extractPublicIdFromUrl(oldThumbnailUrl);
-      if (publicId) {
-        await cloudinary.uploader.destroy(publicId);
-      }
-    }
-
-    // Upload new thumbnail
-    cloudinary.uploader.upload_stream(
-      { resource_type: "image", public_id: `video_thumbnails/${req.userId}_${Date.now()}` },
-      async (error, result) => {
-        if (error) {
-          return res.status(500).json({ message: "Error uploading image to Cloudinary", error });
-        }
-        res.status(200).json({ thumbnailUrl: result.secure_url });
-      }
-    ).end(file.buffer);
-  } catch (error) {
-    res.status(500).json({ message: "Server error during thumbnail upload", error });
-  }
-});
-
-// Update video datails (including thumbnail URL)
-app.put(`${video}/update-thumbnail/:id`, async (req, res) => {
-  const { id } = req.params;
-  const { title, privacy, category, description, thumbnailUrl } = req.body;
-
-  try {
-    const updatedVideo = await VideoModel.findByIdAndUpdate(
-      id,
-      { title, privacy, category, description, thumbnailUrl },
-      { new: true }
-    );
-    res.status(200).json(updatedVideo);
-  } catch (error) {
-    res.status(500).json({ message: "Error updating video", error });
-  }
-});
-
-// Fetch videos based on category
-app.get(`${video}/category/:type`, async (req, res) => {
-  const { type } = req.params;
-  try {
-    const videos = await VideoModel.aggregate([
-      { $match: { category: `${type}` } },
-      { $addFields: { randomSort: { $rand: {} } } },
-      { $sort: { randomSort: 1 } },
-    ]);
-
-    res.json(videos);
-  } catch (error) {
-    res.status(500).json({ error: "Failed to fetch gaming videos" });
   }
 });
 

@@ -107,9 +107,12 @@ export default function VideoGrid({
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/video/${videoId}`, {
-        method: "DELETE",
-      });
+      const response = await fetch(
+        `${API_URL}/api/video/${videoId}/delete-video`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!response.ok) {
         const error = await response.json();
