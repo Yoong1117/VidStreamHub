@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import "../css/VideoDetails.css";
 import axios from "axios";
 import { API_URL } from "../config";
+import { Link } from "react-router-dom";
 
 export default function VideoDetails() {
   const { id } = useParams();
@@ -256,7 +257,7 @@ export default function VideoDetails() {
                   {video.views} views • {timeAgo(video.uploadedAt)}
                 </p>
 
-                <p className="text-muted">
+                <p className="text-muted d-flex align-items-center">
                   <img
                     src={uploader.profilePic}
                     alt="Profile"
@@ -265,7 +266,12 @@ export default function VideoDetails() {
                     height="40"
                     style={{ objectFit: "cover" }}
                   />
-                  {uploader.username}
+                  <Link
+                    to={`/profile/${uploader.username}`}
+                    className="text-decoration-none fw-semibold"
+                  >
+                    {uploader.username}
+                  </Link>
                 </p>
               </div>
 
