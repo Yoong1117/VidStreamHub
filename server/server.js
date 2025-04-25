@@ -545,9 +545,9 @@ app.delete(`${video}/:id/delete-video`, async (req, res) => {
 
     // Delete video and related data from MongoDB
     await VideoModel.findByIdAndDelete(id);
-    await CommentModel.deleteMany({ videoId: id });
-    await LikeModel.deleteMany({ videoId: id });
-    await HistoryModel.deleteMany({ videoId: id });
+    await CommentModel.deleteMany({ video: id });
+    await LikeModel.deleteMany({ video: id });
+    await HistoryModel.deleteMany({ video: id });
 
     res.status(200).json({ message: "Video deleted successfully" });
   } catch (error) {
