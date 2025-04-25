@@ -43,7 +43,7 @@ export default function HistoryPage() {
       return;
     }
 
-    fetch(`${API_URL}/get-history`, {
+    fetch(`${API_URL}/api/history/get-history`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -61,7 +61,7 @@ export default function HistoryPage() {
     if (!window.confirm("Are you sure you want to clear your watch history?"))
       return;
 
-    fetch(`${API_URL}/clear-history`, {
+    fetch(`${API_URL}/api/history/clear-history`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
