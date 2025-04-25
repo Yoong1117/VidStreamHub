@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../css/VideoGrid.css";
 import Navbar from "../components/Navbar";
+import { API_URL } from "../config";
 
 interface Video {
   _id: string;
@@ -42,7 +43,7 @@ export default function HistoryPage() {
       return;
     }
 
-    fetch("http://localhost:3001/api/history/get-history", {
+    fetch(`${API_URL}/get-history`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -60,7 +61,7 @@ export default function HistoryPage() {
     if (!window.confirm("Are you sure you want to clear your watch history?"))
       return;
 
-    fetch("http://localhost:3001/api/history/clear-history", {
+    fetch(`${API_URL}/clear-history`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
