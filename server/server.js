@@ -524,15 +524,15 @@ app.delete(`${video}/:id/delete-video`, async (req, res) => {
     const { id } = req.params;
 
     // Find the video in MongoDB
-    const video = await VideoModel.findById(id);
-    if (!video) {
+    const videos = await VideoModel.findById(id);
+    if (!videos) {
       return res.status(404).json({ message: "Video not found" });
     }
 
     // Extract Cloudinary URLs
-    const videoPublicId = video.videoUrl.split("/").pop().split(".")[0]; // Extract public ID from URL
-    const thumbnailPublicId = video.thumbnailUrl
-      ? video.thumbnailUrl.split("/").pop().split(".")[0]
+    const videoPublicId = videos.videoUrl.split("/").pop().split(".")[0]; // Extract public ID from URL
+    const thumbnailPublicId = videos.thumbnailUrl
+      ? videos.thumbnailUrl.split("/").pop().split(".")[0]
       : null;
 
     // Delete video from Cloudinary
@@ -543,10 +543,11 @@ app.delete(`${video}/:id/delete-video`, async (req, res) => {
       await cloudinary.uploader.destroy(thumbnailPublicId);
     }
 
-    // Remove related videos, comments, likes/dislikes from MongoDB
+    // Delete video and related data from MongoDB
     await VideoModel.findByIdAndDelete(id);
-    await CommentModel.findByIdAndDelete(id);
-    await LikeModel.findByIdAndDelete(id);
+    await CommentModel.deleteMany({ videoId: id });
+    await LikeModel.deleteMany({ videoId: id });
+    await HistoryModel.deleteMany({ videoId: id });
 
     res.status(200).json({ message: "Video deleted successfully" });
   } catch (error) {
